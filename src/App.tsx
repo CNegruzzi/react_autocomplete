@@ -47,7 +47,11 @@ export const App: React.FC<Props> = ({
   }, [isInputFocused, inputValue]);
 
   useEffect(() => {
-    handleFilter(inputValue);
+    if (inputValue.trim()) {
+      handleFilter(inputValue);
+    } else {
+      setSuggestions(peopleFromServer);
+    }
 
     return () => {
       handleFilter.cancel();
