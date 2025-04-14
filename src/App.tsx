@@ -22,16 +22,19 @@ export const App: React.FC<Props> = ({
   const handleFilter = useMemo(
     () =>
       debounce((text: string) => {
-        if (text.trim() === '') {
-          setSuggestions(peopleFromServer);
-        } else {
-          const filtered = peopleFromServer.filter(person =>
-            person.name.toLowerCase().includes(text.toLowerCase()),
-          );
+        const trimmedText = text.trim();
 
-          setSuggestions(filtered);
+        if (trimmedText === '') {
+          setSuggestions(peopleFromServer);
+
+          return;
         }
 
+        const filtered = peopleFromServer.filter(person =>
+          person.name.toLowerCase().includes(trimmedText.toLowerCase()),
+        );
+
+        setSuggestions(filtered);
         setIsInputFocused(true);
       }, debounceDelay),
     [debounceDelay],
@@ -55,8 +58,13 @@ export const App: React.FC<Props> = ({
     const newValue = event.target.value;
 
     setInputValue(newValue);
-
     setSelectedPerson(null);
+
+    if (newValue.trim() === '') {
+      setSuggestions(peopleFromServer);
+
+      return;
+    }
   };
 
   const handleFocus = () => {
@@ -114,7 +122,7 @@ export const App: React.FC<Props> = ({
             />
           </div>
 
-          {(isInputFocused || suggestions.length < 0) && (
+          {(isInputFocused || suggestions.length > 0) && (
             <div
               className="dropdown-menu"
               role="menu"
